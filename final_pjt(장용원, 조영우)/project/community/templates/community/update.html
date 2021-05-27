@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div style="text-align: start; max-width:70%; margin:4rem auto">
+  <h2>리뷰 수정</h2>
+  <form action="" method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button class="btn btn-secondary btn-sm mt-3">수정</button>
+  </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+
+{% block content %}
+{% load pagination_tags %}
+<br>
+<div class="accordion container" id="accordionPanelsStayOpenExample">
+  <div class="accordion-item">
+  <div>
+    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+        <h4>{{test}}{{ movie.title }} ★ {{Real_rating}} </h4>
+        <small class="text-muted">click_{{movie.click}}</small>
+      </button>
+    </h2>
+    </div>
+    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+      <div class="accordion-body row row-cols-1 row-cols-sm-2" style="display: flex;">
+        {% comment %} 왼쪽 {% endcomment %}
+        <div class="container" >
+          <div>
+              <div class="container">
+                <div class="container">
+                  <div class="container">
+                  {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                    <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" alt="" style="width :100%;">
+                  {% else %}
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" style="width :100%;">
+                  {% endif %}
+                  </div>
+                </div>
+              </div>
+          </div>
+          <br>
+          {% comment %} 좋아요버튼, 싫어요버튼, 나중에볼영화추가버튼 {% endcomment %}
+          <div class="container d-flex justify-content-center">
+            <div style="float: right; width: 15%;">
+              <form action="" id="like" class="d-inline" data-movie-id="{{moId}}">
+                {% csrf_token %}
+                {% if user in movie.like_users.all %}
+                  <button class="btn-like-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-heart fa-lg" style="color:red;" id="i-like-{{moId}}"></i>
+                  </button>
+                {% else %}
+                  <button class="btn-like-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-heart fa-lg" style="color:gray;" id="i-like-{{moId}}"></i>
+                  </button>
+                {% endif %}
+              </form>
+              {% comment %} <span id="count-like-{{moId}}">{{ movie.like_users.all|length }}</span><br> {% endcomment %}
+            </div>
+            {% comment %} 싫어요 {% endcomment %}
+            <div style="float: right; width: 15%;">
+              <form action="" id="hate" class="d-inline" data-movie-id="{{moId}}">
+                {% csrf_token %}
+                {% if user in movie.hate_users.all %}
+                  <button class="btn-hate-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-heart-broken fa-lg" style="color:black;" id="i-hate-{{moId}}"></i>
+                  </button>
+                {% else %}
+                  <button class="btn-hate-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-heart-broken fa-lg" style="color:gray;" id="i-hate-{{moId}}"></i>
+                  </button>
+                {% endif %}
+              </form>
+              {% comment %} <span id="count-hate-{{moId}}">{{ movie.hate_users.all|length }}</span><br> {% endcomment %}
+            </div>
+            {% comment %} 나중에 볼 영화 {% endcomment %}
+            <div style="float: right; width: 15%;">
+              <form action="" id="add_movie" class="d-inline" data-movie-id="{{moId}}">
+                {% csrf_token %}
+                {% if user in movie.add_movie.all %}
+                  <button class="btn-add_movie-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-folder-plus fa-lg" style="color:blue;" id="i-add_movie-{{moId}}"></i>
+                  </button>
+                {% else %}
+                  <button class="btn-add_movie-{{moId}} btn-link btn btn-light">
+                    <i class="fas fa-folder-plus fa-lg" style="color:gray;" id="i-add_movie-{{moId}}"></i>
+                  </button>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        </div>
+        {% comment %} 오른쪽 {% endcomment %}
+        <div class="container">
+
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">사람들한줄평(익명)</button>
+              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">줄거리</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+              <div class="">
+              {% comment %} {% if  %}{% endif %} {% endcomment %}
+                <form action="{% url 'movies:create_linereview' movie.movie_id %}" method="POST">
+                  {% csrf_token %}
+                  <div class="" style="float: left; width: 75%; margin-right: 10px"><label for="id_content">Content</label><input type="text" name="content" maxlength="100" class="form-control" placeholder="Content" title="" required id="id_content"></div>
+                  <div class="" style="float: left; width: 15%; margin-right: 5px"><label for="id_rating">Rating</label><input type="number" name="rating" min="0" max="10" class="form-control" placeholder="★" title="" required id="id_rating"></div>
+                  <br><div style="float: left; width: 8%;"><button class="btn btn-light" style="">✔</button></div>
+                </form>
+              </div>
+
+              <div class='' style="clear:both;">
+              {% if linereviews|length %}
+                <br><div><b>{{ linereviews|length }}명이 이 영화를 보고 평가해주셨습니다.</b></div>
+              {% else %}
+                <br><p><b>제일 먼저 이 영화를 평가해주세요</b></p>
+              {% endif %}
+              </div>
+              {% autopaginate linereviews 7 %}
+              <br>
+                {% for linereview in linereviews %}
+                  <ul>
+                    <div class="">
+                      {{linereview.content}} {{linereview.rating}}
+                      {% if linereview.user == request.user %}
+                        <form action="{% url 'movies:delete_linereview' movie.movie_id linereview.pk %}" method="POST" class="d-inline-flex">
+                          {% csrf_token %}
+                          <button class="btn btn-ransparent btn-sm rounded-circle text-warning fw-bold">X</button>
+                        </form>
+                      {% endif %}
+                      </li>
+                    </div>
+                  </ul>
+                {% endfor %}
+              {% paginate %}
+            </div>
+
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <p>{{movie.release_date}} 개봉</p>
+            {% for genre in movie_genres_list %}
+              <button class="btn btn-light" onclick = "location.href = '{% url 'movies:genre_recommended' genre.genre_name %}'" >{{genre.genre_name}}</button>
+            {% endfor %}
+            {% if movie.overview %}
+            <br><br><p class="text-break fs-6">{{movie.overview}}</p>
+            {% else %}
+            <br><br><p class="text-break fs-6">정보가 존재하지 않습니다.</p>
+            {% endif %}
+            </div>  
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+        영화 후기
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+      <div class="accordion-body">
+        <div>
+        {% if reviews|length == 0 %}
+          <p>아직 작성된 후기가 없습니다.</p>
+          <a href="{% url 'community:create' moId %}">얼른 후기를 작성해주세요!</a>
+        {% endif %}
+          {% for review in reviews %}
+            <ul>
+              <li><a href="{% url 'community:detail' review.pk %}">{{review.content|truncatechars:30}}</a> by.{{review.user}}</li>
+            </ul>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+        비슷한 장르의 영화
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+      <div class="accordion-body">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in Now_recomen_movie_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.id %}' ">
+              <div class="card">
+              {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top" alt="" style="cursor:pointer">
+              {% else %}
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top" alt="" style="cursor:pointer">
+              {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                    {% comment %} <p class="card-text">{{movie.overview|truncatechars:50}}</p> {% endcomment %}
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+{% comment %} 좋아요 {% endcomment %}
+  const likes = document.querySelectorAll('#like') //All
+  likes.forEach(function(like){
+    like.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const likemovieId=event.target.dataset.movieId
+      const LIKE_URL=`http://pjtyw.herokuapp.com/movies/${likemovieId}/like/`
+
+      const config = { 
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      }
+      axios.post(LIKE_URL,{},config)
+        .then((response)=>{
+          console.log(response.data)
+          const liked = response.data.liked
+          const btn =document.querySelector(`.btn-like-${likemovieId}`)
+          const like_btn = document.querySelector(`#i-like-${likemovieId}`)
+          const count = document.querySelector(`#count-like-${likemovieId}`)
+          if (liked) { //true
+            like_btn.style.color="red"
+          } 
+          else { //false
+            like_btn.style.color="gray"
+
+          }
+
+        })
+        // .catch(){}
+      
+    })
+  })
+{% comment %} 싫어요 {% endcomment %}
+  const hates = document.querySelectorAll('#hate') //All
+  hates.forEach(function(hate){
+    hate.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const hatemovieId=event.target.dataset.movieId
+      const HATE_URL=`http://pjtyw.herokuapp.com/movies/${hatemovieId}/hate/`
+
+      const config = { 
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      }
+      axios.post(HATE_URL,{},config)
+        .then((response)=>{
+          console.log(response.data)
+          const hated = response.data.hated
+          const btn =document.querySelector(`.btn-hate-${hatemovieId}`)
+          const hate_btn = document.querySelector(`#i-hate-${hatemovieId}`)
+          const count = document.querySelector(`#count-hate-${hatemovieId}`)
+          if (hated) { //true
+            hate_btn.style.color="black"
+          } 
+          else { //false
+            hate_btn.style.color="gray"
+
+          }
+
+        })
+        // .catch(){}
+      
+    })
+  })
+{% comment %} 영화 찜 {% endcomment %}
+  const add_movies = document.querySelectorAll('#add_movie') //All
+  add_movies.forEach(function(add_movie){
+    add_movie.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const addmovieId=event.target.dataset.movieId
+      const ADDMOVIE_URL=`http://pjtyw.herokuapp.com/movies/${addmovieId}/add_movie/`
+
+      const config = { 
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      }
+      axios.post(ADDMOVIE_URL,{},config)
+        .then((response)=>{
+          console.log(response.data)
+          const added_movie = response.data.added_movie
+          const btn =document.querySelector(`.btn-add_movie-${addmovieId}`)
+          const add_movie_btn = document.querySelector(`#i-add_movie-${addmovieId}`)
+          const count = document.querySelector(`#count-add_movie-${addmovieId}`)
+          if (added_movie) { //true
+            add_movie_btn.style.color="blue"
+          } 
+          else { //false
+            add_movie_btn.style.color="gray"
+          }
+
+        })
+        // .catch(){}
+      
+    })
+  })
+</script>
+
+{% endblock  %}
+

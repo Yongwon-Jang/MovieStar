@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div style="text-align: center; max-width:70%; margin:2rem auto">
+  <h5 class="text-center text-white">"{{movie.title}}" 리뷰 작성</h5>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group"><label for="id_title"></label><input type="text" name="title" maxlength="100" class="form-control" placeholder="Title" title="" required id="id_title"></div>
+    <div class="form-group"><label for="id_rank"></label><input type="number" name="rank" min="0" max="10" class="form-control" placeholder="Rank" title="" required id="id_rank"></div>
+    <div class="form-group"><label for="id_content"></label><textarea name="content" cols="40" rows="10" class="form-control" placeholder="Content" title="" required id="id_content">
+    </textarea></div>
+    <button class="btn text-white" style="margin: 5px;">작성</button>
+  </form>
+    <button class="btn text-white" onclick="location.href='{% url 'community:index' %}'" style="margin: 1px;">Board</button>
+  <br>
+</div>
+{% endblock %}

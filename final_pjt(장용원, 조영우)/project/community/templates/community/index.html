@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load pagination_tags %}
+  <div class="container">
+  <h1 class="text-white text-center">Community</h1><br>
+  {% if user.is_authenticated %}
+{% comment %} 리뷰할 영화 찾아보기 {% endcomment %}
+    <div class="d-flex justify-content-center">
+      <form action="{% url 'movies:search' %}" class="d-flex justify-content-center" style="width:80%;">
+        <input class="form-control me-2" type="search" placeholder="리뷰를 작성하고싶거나, 찾고자 하는 영화의 키워드를 입력하세요" aria-label="Search" name="search"/>
+        <button class="btn btn-outline-light" type="submit">Search</button>
+      </form>
+    </div>
+    {% comment %} <a href="{% url 'community:create' %}">NEW</a> {% endcomment %}
+  {% else %}
+    <a href="{% url 'accounts:login' %}">[새 글을 작성하려면 로그인하세요]</a>
+  {% endif %}
+  <hr>
+  
+  
+  {% comment %} 검색기능 {% endcomment %}
+    <div class="d-flex justify-content-start">
+      <form action="{% url 'community:index' %}" method="POST" class="d-flex justify-content-center" style="width:50%;">
+          {% csrf_token %}
+        <input class="form-control me-2" type="text" name="post" value="{{ post }}" placeholder="찾고자하는 리뷰의 영화제목을 입력하세요"/>
+        <input type="submit" value="검색" class="btn btn-outline-warning btn-sm">
+      </form>
+    </div>
+  {% comment %} 검색 {% endcomment %}
+
+  <br><table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col" class="text-light">#</th>
+      <th scope="col" class="text-light">영화 제목</th>
+      <th scope="col" class="text-light">글 제목</th>
+      <th scope="col" class="text-light">작성자</th>
+      <th scope="col" class="text-light">조회수</th>
+      {% comment %} <th scope="col" class="text-light">작성</th>
+      <th scope="col" class="text-light">수정</th> {% endcomment %}
+    </tr>
+  </thead>
+  <tbody>
+    {% autopaginate reviews 10 %}
+    {% for review in reviews %}
+      <tr>
+        <th scope="row" class="text-light">{{ review.pk }}</th>
+        <td class="text-light">{{ review.movie_title|truncatechars:20 }}</td>
+        <td><a href="{% url 'community:detail' review.pk %}" class="link-light">{{ review.title|truncatechars:20 }}</a></td>
+        <td class="text-light">{{ user|truncatechars:10 }}</td>
+        {% if not review.click %}
+          <td class="text-light">0</td>
+        {% else %}
+          <td class="text-light">{{ review.click }}</td>
+        {% endif %}
+        {% comment %} <td class="text-light">{{ review.created_at }}</td>
+        <td class="text-light">{{ review.updated_at }}</td> {% endcomment %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+    
+    {% paginate %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+    const likes = document.querySelectorAll('#like') //All
+    likes.forEach(function(like){
+      like.addEventListener('submit', function(event){
+        event.preventDefault()
+
+        const reviewPk=event.target.dataset.reviewPk
+        const LIKE_URL=`http://pjtyw.herokuapp.com/community/${reviewPk}/like/`
+
+        const config = { 
+          headers: {
+            'X-CSRFToken': csrftoken
+          }
+        }
+        axios.post(LIKE_URL,{},config)
+          .then((response)=>{
+            console.log(response.data)
+            const liked = response.data.liked
+            const btn =document.querySelector(`.btn-${reviewPk}`)
+            const like_btn = document.querySelector(`#i-${reviewPk}`)
+            const count = document.querySelector(`#count-${reviewPk}`)
+            if (liked) { //true
+              like_btn.style.color="crimson"
+              
+            } 
+            else { //false
+              like_btn.style.color="gray"
+
+            }
+            count.innerText=response.data.count
+          })
+          // .catch(){}
+        
+      })
+    })
+  </script>
+{% endblock %}

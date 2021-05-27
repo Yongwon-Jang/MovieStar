@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div style="text-align: center; max-width:30%; margin:1rem auto">
+  <h1 class="text-white">Sign UP</h1><br>
+  <div class="text-white">
+    <form action="" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <br><input type="submit" class="btn btn-outline-light text-white" value="회원가입 작성 완료">
+    </form>
+    </div>
+  <hr>
+  <button class="btn"><a href="{% url 'community:index' %}" style="color:white">BACK</a></button>
+</div>
+{% endblock  %}

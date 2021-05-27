@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+{% comment %} 검색기능 {% endcomment %}
+<br>
+<div class="d-flex justify-content-center">
+  <form action="{% url 'movies:search' %}" class="d-flex justify-content-center" style="width:60%;">
+    <input class="form-control me-2" type="search" placeholder="리뷰를 작성하고싶거나, 찾고자 하는 영화의 키워드를 입력하세요." aria-label="Search" name="search"/>
+    <button class="btn btn-outline-light" type="submit">Search</button>
+  </form>
+</div>
+{% comment %} 내가좋아요한 영화 기반 추천 {% endcomment %}
+<br>
+<div class="d-flex justify-content-center">
+  <div class="container" style="width:100%;">
+  {% if recommend_to_user %}
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <button class="btn btn-light d-flex justify-content-center mx-auto" onclick = "location.href = '{% url 'movies:index' %}' ">나에게 추천하는 영화</button><br><br>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+            {% for movie in recommend_to_user %}
+              <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+                <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                  <div class="card-body">
+                    <p class="card-title fs-6 text-center">{{movie.title|truncatechars:10}}</p>
+                    <p class="card-text text-white text-center"><small>★ {{movie.vote_average}}</small></p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        <br><br>
+        <div class="carousel-caption d-none d-md-block">
+        </div>
+      </div>
+    </div>
+    {% else %}
+      <p class="text-center text-white">좋아하는 영화가 없으신가요? 추천해드릴게없네요</p>
+    {% endif %}
+  </div>
+</div>
+
+{% comment %} 굴러가는 영화들 {% endcomment %}
+<div class="d-flex justify-content-center">
+  <div id="carouselExampleDark" class="carousel carousel-dark slide d-flex justify-content-center" data-bs-ride="carousel" style="width:1200px;">
+    <div class="carousel-indicators btn-light d-flex justify-content-center mx-auto" style="width:10%;">
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1">213</button>
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="container">
+      <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="10000">
+          <h5 class="text-center text-white">조회순</h5><br>
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+              {% for movie in movie_list %}
+                <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+                  <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% endif %}
+                    <div class="card-body">
+                      <p class="card-title fs-6 text-center">{{movie.title|truncatechars:10}}</p>
+                      <p class="card-text text-white text-center"><small>★ {{movie.vote_average}}</small></p>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          <br><br>
+        </div>
+        <div class="carousel-item" data-bs-interval="3000">
+          <h5 class="text-center text-white">현재 인기 순위</h5><br>
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in popular_movie_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6 text-center">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text text-white text-center"><small>★ {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+          <br><br>
+        </div>
+        <div class="carousel-item" data-bs-interval="3000">
+          <h5 class="text-center text-white">현재 평점 순위</h5><br>
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+              {% for movie in top_movie_data %}
+                <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+                    <div class="card bg-transparent text-white">
+                {% if movie.poster_path %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="..." style="cursor:pointer">
+                {% endif %}
+                      <div class="card-body">
+                        <p class="card-title fs-6 text-center">{{movie.title|truncatechars:10}}</p>
+                        <p class="card-text text-white text-center"><small>★ {{movie.vote_average}}</small></p>
+                      </div>
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+          <br><br>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+</script>
+
+
+{% endblock  %}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/dacf7dcd9c.js" crossorigin="anonymous"></script>
+
+<style>
+  body{
+    background-image: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569__340.jpg');
+    background-repeat: round;
+    background-size: 100% 100%;
+    height: 100vh;
+  }
+  </style>
+</head>
+<body>
+{% comment %} NavBar-START {% endcomment %}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top bg-transparent">
+    <div class="container-fluid">
+      <button class="btn bg-transparent text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+        <h3><i class="fas fa-list"> 영화별다방</i></h3>
+      </button>
+      <button class="btn bg-transparent text-white" onclick = "location.href = '{% url 'movies:index' %}'"></button>
+      {% if request.user.is_authenticated %}
+        <button class="btn bg-transparent text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><h3><i class="fas fa-user"></i></h3></button>
+      {% endif %}
+    </div>
+  </nav>
+  {% comment %} 오른쪽offcanvas {% endcomment %}
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+      <h5 id="offcanvasRightLabel">{{request.user}}님, 안녕하세요.
+      <br><br>
+      </h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+    {% comment %} navtab {% endcomment %}
+      <div class="d-flex align-items-start">
+        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">liked Reviews <span class="badge bg-secondary">{{request.user.like_reviews.all|length}}</span></button>
+          <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Liked Movies <span class="badge bg-secondary">{{request.user.users_like.all|length}}</span></button>
+          <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">My Review <span class="badge bg-secondary">{{request.user.review_set.all|length}}</span></button>
+          <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Add Movie <span class="badge bg-secondary">{{request.user.like_reviews.all|length}}</span></button>
+        </div>
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+            {% for review in request.user.like_reviews.all %}
+              <ul>
+                <li><p onclick = "location.href = '{% url 'community:detail' review.pk %}'" style="cursor:pointer">{{review.title|truncatechars:10}}</p></li>
+              </ul>
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+            {% for movie in request.user.users_like.all %}
+              <ul>
+                <li><p onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}'" style="cursor:pointer">{{movie.title|truncatechars:10}}</p></li>
+              </ul>
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+            {% for review in request.user.review_set.all %}
+              <ul>
+                <li><p onclick = "location.href = '{% url 'community:detail' review.pk %}'" style="cursor:pointer">{{review.movie_title|truncatechars:10}}</p></li>
+              </ul>
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+            {% for movie in request.user.movie_add.all %}
+              <ul>
+                <li><p onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}'" style="cursor:pointer">{{movie.title|truncatechars:10}}</p></li>
+              </ul>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <br>
+      <div class="d-flex justify-content-center">
+        <form action="{% url 'accounts:logout' %}" method="POST" class="d-flex justify-content-center inline">
+        {% csrf_token %}
+        <button class="btn btn-outline-primary">Logout</button>
+        </form>
+        <form action="{% url 'accounts:change_password' %}" method="GET" class="d-flex justify-content-center inline">
+        <button class="btn btn-outline-primary mx-1">비밀번호변경</button>
+        </form>
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">회원탈퇴</button>
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">회원 탈퇴</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                정말로 탈퇴하시겠습니까?
+              </div>
+              <div class="modal-footer">
+                <form name="boardInfo">
+                  {% csrf_token %}
+                  <button type="button" class="btn btn-secondary" onclick="clickDel(boardInfo)">Yes</button>
+                </form>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <br>
+  </div>
+  {% comment %} 왼쪽offcanvas {% endcomment %}
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style="width:200px;">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasExampleLabel">영화★다방</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div>
+      <a a class="nav-link active" aria-current="page" href="{% url 'movies:index' %}">Home</a>
+      <a class="nav-link active" href="{% url 'community:index' %}">Community</a>
+
+      </div>
+      <div class="dropdown">
+        <a class="nav-link active dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown">장르별</a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '액션' %}">액션</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '모험' %}">모험</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '애니메이션' %}">애니메이션</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '코미디' %}">코미디</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '범죄' %}">범죄</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '다큐멘터리' %}">다큐멘터리</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '드라마' %}">드라마</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '가족' %}">가족</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '판타지' %}">판타지</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '역사' %}">역사</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '공포' %}">공포</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '음악' %}">음악</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '미스터리' %}">미스터리</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '로맨스' %}">로맨스</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' 'SF' %}">SF</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' 'TV 영화' %}">TV 영화</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '스릴러' %}">스릴러</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '전쟁' %}">전쟁</a></li>
+          <li><a class="dropdown-item" href="{% url 'movies:genre_recommended' '서부' %}">서부</a></li>
+        </ul>
+      </div>
+<hr>
+      <div class="dropdown">
+        <a class="btn btn-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+          영화예매
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <li><a class="nav-link active" href="https://www.cgv.co.kr/">CGV</a></li>
+          <li><a class="nav-link active" href="https://www.lottecinema.co.kr/NLCHS">LotteCinema</a></li>
+          <li><a class="nav-link active" href="https://www.megabox.co.kr/">MegaBOX</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {% block content %}
+  {% endblock  %}
+
+</body>
+
+<script>
+	function clickDel(formName) {
+		formName.action = "/accounts/delete/";
+		formName.method = "post";
+		formName.submit();
+	}
+</script>
+
+</html>

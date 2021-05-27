@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+{% comment %} 검색기능 {% endcomment %}
+<br>
+<div class="d-flex justify-content-center">
+  <form action="{% url 'movies:search' %}" class="d-flex justify-content-center" style="width:60%;">
+    <input class="form-control me-2" type="search" placeholder="리뷰를 작성하고싶거나, 찾고자 하는 영화의 키워드를 입력하세요" aria-label="Search" name="search"/>
+    <button class="btn btn-outline-light" type="submit">Search</button>
+  </form>
+</div>
+<br>
+{% if searched_result_movies %}
+<h3 class="text-center text-white">검색결과</h3>
+  <div class="container">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+      {% for movie in searched_result_movies %}
+        <div class="card-group" data-bs-toggle="modal" data-bs-target="#modal-{{movie.id}}">
+          <div class="modal fade" id="modal-{{movie.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">{{movie.title}}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                {% if movie.overview %}
+                  {{movie.overview}}
+                  {% else %}
+                  <p>정보가 존재하지 않습니다.</p>
+                {% endif %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onclick="location.href = '{% url 'movies:detail' movie.id %}' ">detail</button>
+                  <button type="button" class="btn btn-primary" onclick="location.href = '{% url 'community:create' movie.id %}' ">Create Review</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card bg-transparent text-white" >
+          {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+          {% else %}
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="">
+          {% endif %}
+            <div class="card-body">
+              <p class="card-title fs-6">{{movie.title}}</p>
+              <p class="card-text"><small>평점 : {{movie.vote_average}}</small></p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <h3 class="text-center text-white">검색결과가 없습니다</h3>
+{% endif %}
+{% endblock content %}

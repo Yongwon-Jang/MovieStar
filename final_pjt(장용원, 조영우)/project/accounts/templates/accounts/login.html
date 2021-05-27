@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css'%}">
+
+{% block content %}
+<div style="text-align: center; max-width:30%; margin:4rem auto">
+  <h1 class="text-white">Login</h1>
+  <hr>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group text-white" style="margin-bottom: 10px;"><label for="id_username">ID</label><input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" class="form-control" placeholder="Id" title="" required id="id_username"></div>
+    <div class="form-group text-white"><label for="id_password">Password</label><input type="password" name="password" autocomplete="current-password" class="form-control" placeholder="Password" title="" required id="id_password"></div>
+    <br><button class="btn btn-outline-primary">Login</button>
+  </form>
+  <hr>
+  <button class="btn btn-outline-dark text-white" onclick = "location.href = '{% url 'accounts:signup' %}' ">아직 회원이 아니신가요?</button>
+  <strong><p class="text-white" style="">회원이 아니시라면 이용할 수 없습니다.</p></strong>
+  <br><br>
+  {% comment %} <button class="btn btn-primary"><a href="{% url 'movies:index' %}" style="color:white">BACK</a></button> {% endcomment %}
+</div>
+{% endblock %}

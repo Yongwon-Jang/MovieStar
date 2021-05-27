@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+  <div class="container">
+  {% comment %} <h2 class="text-center">DETAIL</h2> {% endcomment %}
+  <h3 class="mb-3 mt-3 mx-3 text-white" onclick = "location.href = '{% url 'movies:detail' movie_id %}'" style="cursor:pointer;">{{ review.movie_title }}</h3>
+
+  <ol class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">제목 : {{ review.title }}</div>
+      </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">리뷰 내용</div>
+        <table style="height: 100px;">
+          <tbody>
+            <tr>
+
+              <td class="align-middle">{{ review.content }}</td>
+            </tr>
+          </tbody>
+        </table>  
+        
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">★ : {{ review.rank }}</div>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto ">
+        <span class="fw-bold text-end">조회수 : {{ review.click }}</span>        
+      </div>
+    </li>
+  </ol>
+  <br>
+  <div class="">
+    <form action="" id="like" class="d-inline" data-review-pk="{{review.pk}}">
+      {% csrf_token %}
+      {% if user in review.like_users.all %}
+        <button class="btn-like-{{review.pk}} btn-link btn btn-light">
+          <i class="fas fa-heart fa-lg" style="color:crimson;" id="i-like-{{review.pk}}"></i>
+        </button>
+      {% else %}
+        <button class="btn-like-{{review.pk}} btn-link btn btn-light">
+          <i class="fas fa-heart fa-lg" style="color:gray;" id="i-like-{{review.pk}}"></i>
+        </button>
+      {% endif %}
+    </form>
+    <form action="" id="hate" class="d-inline" data-review-pk="{{review.pk}}">
+      {% csrf_token %}
+      {% if user in review.hate_users.all %}
+        <button class="btn-hate-{{review.pk}} btn-link btn btn-light">
+          <i class="fas fa-heart-broken fa-lg" style="color:black;" id="i-hate-{{review.pk}}"></i>
+        </button>
+      {% else %}
+        <button class="btn-hate-{{review.pk}} btn-link btn btn-light">
+          <i class="fas fa-heart-broken fa-lg" style="color:gray;" id="i-hate-{{review.pk}}"></i>
+        </button>
+      {% endif %}
+    </form>
+    <div class="btn-group bg-transparent text-white" style="float: left; width: 10%;">
+      <button type="button" class="btn bg-transparent text-white" onclick = "location.href = '{% url 'community:index' %}'">Board</button>
+      <button type="button" class="btn dropdown-toggle dropdown-toggle-split bg-transparent text-white" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="visually-hidden">Toggle Dropdown</span>
+      </button>
+      {% if user == review_user %}
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{% url 'community:update' review.pk %}">수정</a></li>
+        <li>
+          <form action="{% url 'community:delete' review.pk %}" method="POST">
+            {% csrf_token %}
+            <button class="btn" type="submit">삭제</button>
+          </form>
+        </li>
+      </ul>
+      {% endif %}
+    </div>
+  <div>
+    <p class="fs-6 fst-italic mb-0 fw-lighter d-flex justify-content-end mt-3 text-white">작성: {{ review.created_at }}</p>
+    <p class="fs-6 fst-italic fw-lighter d-flex justify-content-end text-white">수정: {{ review.updated_at }}</p>
+  </div>
+  </div>
+  {% if comments|length %}
+    <p class="text-white"><b>{{ comments|length }}개의 댓글이 있습니다.</b></p>
+  {% endif %}
+  {% for comment in comments %}
+    <div>
+      <div class="container text-white">
+        <li>
+          {{ comment.user }} - {{ comment.content }}
+          {% if comment.user == user %}
+          <form action="{% url 'community:comment_delete' review.pk comment.pk %}" method="POST" class="d-inline-flex">
+            {% csrf_token %}
+            <button class="btn btn-ransparent btn-sm rounded-circle text-warning fw-bold">X</button>
+          </form>
+          {% endif %}
+        </li>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-white"><b>댓글이 없어요..</b></p>
+  {% endfor %}
+  <hr>
+  <div style="text-align: center; margin:1rem auto">
+  {% if request.user.is_authenticated %}
+  <div class="d-flex justify-content-center">
+    <form action="{% url 'community:create_comment' review.pk %}" method="POST" style="width:80%;">
+      {% csrf_token %}
+      <div class="" style="float: left; width: 90%;"><label for="id_content">Comment</label><input type="text" name="content" maxlength="100" class="form-control" placeholder="Comment" title="" required id="id_content"></div>
+      <br><div style="float: left; width: 10%;"><button class="btn bg-transparent text-white" style="">✔</button></div>
+    </form>
+  </div>
+  {% else %}
+    <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+  {% endif %}
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+  const likes = document.querySelectorAll('#like') //All
+  likes.forEach(function(like){
+    like.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const reviewPk=event.target.dataset.reviewPk
+      const LIKE_URL=`http://pjtyw.herokuapp.com/community/${reviewPk}/like/`
+
+      const config = { 
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      }
+      axios.post(LIKE_URL,{},config)
+        .then((response)=>{
+          console.log(response.data)
+          const liked = response.data.liked
+          const btn =document.querySelector(`.btn-like-${reviewPk}`)
+          const like_btn = document.querySelector(`#i-like-${reviewPk}`)
+          const count = document.querySelector(`#count-like-${reviewPk}`)
+          if (liked) { //true
+            like_btn.style.color="crimson"
+            
+          } 
+          else { //false
+            like_btn.style.color="black"
+
+          }
+          count.innerText=response.data.count
+        })
+        // .catch(){}
+      
+    })
+  })
+  const hates = document.querySelectorAll('#hate') //All
+  hates.forEach(function(hate){
+    hate.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const reviewPk=event.target.dataset.reviewPk
+      const HATE_URL=`http://pjtyw.herokuapp.com/community/${reviewPk}/hate/`
+
+      const config = { 
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      }
+      axios.post(HATE_URL,{},config)
+        .then((response)=>{
+          console.log(response.data)
+          const hated = response.data.hated
+          const btn =document.querySelector(`.btn-hate-${reviewPk}`)
+          const hate_btn = document.querySelector(`#i-hate-${reviewPk}`)
+          const count = document.querySelector(`#count-hate-${reviewPk}`)
+          if (hated) { //true
+            hate_btn.style.color="black"
+            
+          } 
+          else { //false
+            hate_btn.style.color="gray"
+
+          }
+          count.innerText=response.data.count
+        })
+        // .catch(){}
+      
+    })
+  })
+  </script>
+{% endblock  %}
+
+

@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% block content %}
+<br>
+<h3 class="text-center text-white">{{genre}}장르의 영화</h3>
+<div class="d-flex justify-content-center">
+  <div id="carouselExampleFade1" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width:1200px;">
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">인기순</h4>
+      <br>
+      {% if genre_popular %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_popular %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">투표수</h4>
+      <br>
+      {% if genre_vote %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_vote %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">개봉순</h4>
+      <br>
+      {% if genre_date %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_date %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">조회순</h4>
+      <br>
+      {% if genre_click %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_click %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+          {% else %}
+            <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+          {% endif %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade1" data-bs-slide="prev" style="width: 50px;">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade1" data-bs-slide="next" style="width: 50px;">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<h3 class="text-center text-white">언어별 순위</h3>
+<div class="d-flex justify-content-center">
+  <div id="carouselExampleFade2" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width:1200px;">
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">한국어</h4>
+      <br>
+      {% if ko_movie %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in ko_movie %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6 text-white">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted text-white">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">English</h4>
+      <br>
+      {% if en_movie %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in en_movie %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">日本語</h4>
+      <br>
+      {% if ja_movie %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in ja_movie %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        {% endif %}
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center text-white">中文</h4>
+      <br>
+      {% if zh_movie %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in zh_movie %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.movie_id %}' ">
+              <div class="card bg-transparent text-white">
+                {% if movie.poster_path != 'https://image.tmdb.org/t/p/w500/None' %}
+                  <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% else %}
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBZGu6VKk3PLJsKFT8RlWtsjl0LfphN_j7aQ&usqp=CAU" class="card-img-top rounded-circle" alt="" style="cursor:pointer">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div style="height: 300px;">
+          <p class="text-white text-center" style="height: 340px;">조회 결과가 없습니다.</p>
+        </div>
+        {% endif %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade2" data-bs-slide="prev" style="width: 50px;">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade2" data-bs-slide="next" style="width: 50px;">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <div class="d-flex justify-content-center">
+  <div id="carouselExampleFade2" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width:1200px;">
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center">한국</h4>
+      <br>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_ko_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.id %}' ">
+              <div class="card bg-transparent text-white">
+                <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="...">
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center">미국</h4>
+      <br>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_us_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.id %}' ">
+              <div class="card bg-transparent text-white">
+                <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="...">
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center">일본</h4>
+      <br>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_jp_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.id %}' ">
+              <div class="card bg-transparent text-white">
+                <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="...">
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="carousel-item" data-bs-interval="5000">
+      <br>
+      <h4 class="text-center">중국</h4>
+      <br>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+          {% for movie in genre_cn_list %}
+            <div class="card-group" onclick = "location.href = '{% url 'movies:detail' movie.id %}' ">
+              <div class="card bg-transparent text-white">
+                <img src="https://image.tmdb.org/t/p/w500/{{movie.poster_path}}" class="card-img-top rounded-circle" alt="...">
+                <div class="card-body">
+                  <p class="card-title fs-6">{{movie.title|truncatechars:10}}</p>
+                  <p class="card-text"><small class="text-muted">평점 : {{movie.vote_average}}</small></p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade2" data-bs-slide="prev" style="width: 50px;">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade2" data-bs-slide="next" style="width: 50px;">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+</div> {% endcomment %}
+
+{% endblock content %}
