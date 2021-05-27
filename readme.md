@@ -15,17 +15,20 @@
 
 - 구미 1반 장용원
   - community (front, back)
+  - 영화 리뷰 작성 및 회원 가입 서비스 구현
+  - 사용자가 사용하기 쉽도록 홈페이지 구성 
 - 구미 1반 조영우
-  - movies (front, back) 
-
-
+  - movies (front, back)
+  - 영화 데이터를 활용하여 사용자 좋아요 기반 영화 추천 기능 구현
+  - 인기순, 조회순, 평점순 영화 추천 기능 구현
+  
 
 #### 3. 목표 서비스 구현 및 실제 구현 정도
 
-- 목표 서비스 
-  - API를 활용하여 얻은 영화 정보를 활용해 인기순, 평점순으로 영화 데이터 출력
-  - 사용자가 누른 '좋아요'에 기반한 영화 추천
-- 실제 구현 : 
+- 목표 서비스
+  - 로그인 한 사용자가 홈페이지를 이용하면서 이동한 기록에 따른 맞춤 영화 추천 알고리즘 구현
+- 실제 구현 정도
+  - 사용자가 좋아요한 영화를 기반으로 비슷한 장르의 영화를 추천 할 수 있음
 
 #### 4. 데이터베이스 모델링(ERD)
 
@@ -33,305 +36,23 @@
 
 #### 5. 필수 기능에 대한 설명
 
-
+- API를 활용하여 얻은 영화 정보를 활용해 인기순, 평점순, 조회순으로 영화 데이터를 출력합니다.
+- 키워드 검색을 통한 영화 검색 기능
+- 원하는 장르별, 언어별 인기 영화 추천 기능
+- 사용자가 누른 '좋아요'에 기반한 영화 추천 기능
+- 찾은 영화와 비슷한 장르의 영화 추천 기능
+- 로그인, 로그아웃, 비밀번호 변경, 회원 탈퇴 기능
+- 영화에 대해 자유롭게 소통할 수 있는 Community 페이지
+- 영화 및 영화 리뷰에 대한 댓글 기능 및 좋아요 기능
 
 #### 6. 배포 서버 URL
 
-
-
-#### 7. 기타(느낀점)
-
-
-
-## 결과
-
-
-
-## Code
-
-### 1. App.vue
-
-```vue
-<template>
-  <div id="app">
-    <div id="nav">
-      <router-link :to="{ name: 'Home' }">Home</router-link> |
-      <router-link :to="{ name: 'Random' }">Random</router-link> |
-      <router-link :to="{ name: 'MyMovieList' }">MyMovieList</router-link>
-    </div>
-  <router-view/>
-  </div>
-</template>
-
-<script>
-
-export default {
-  name: 'App',
-  components: {
-    
-  }
-}
-</script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
-
-```
-
-
-
-### 2. Home.vue
-
-```vue
-<template>
-  <div>
-    <h1>Home</h1>
-    <MovieCard v-for="(movieItem, idx) in movieItems"
-      :key="idx"
-      :movieItem="movieItem" />
-  </div>
-</template>
-
-<script>
-import MovieCard from '@/components/MovieCard'
-
-const MOVIE_URL= 'https://gist.githubusercontent.com/eduChange-hphk/d9acb9fcfaa6ece53c9e8bcddd64131b/raw/9c8bc58a99e2ea77d42abd41376e5e1becabea69/movies.json'
-
-import axios from 'axios'
-
-export default {
-  name: 'Home',
-  data: function () {
-    return {
-      movieItems: ''
-    }
-  },
-  created: function () {
-    axios.get(MOVIE_URL)
-      .then (response => {
-        console.log(response.data)
-        this.movieItems = response.data
-    })
-  },
-  components: {
-    MovieCard,
-    },
-}
-</script>
-
-```
-
-
-
-### 3. MyMovieList.vue
-
-```html
-<template>
-  <div>
-    <h1>MyMovieList</h1>
-    <MyListForm @send-movie="getMovie"/>
-    <MyList v-for="(myMovie, idx) in myMovies"
-    :key="idx"
-    :myMovie="myMovie"/>
-
-  </div>
-</template>
-
-<script>
-import MyList from '@/components/MyList'
-import MyListForm from '@/components/MyListForm'
-
-export default {
-  name: 'MyMovieList',
-  data: function () {
-    return {
-      myMovies : [],
-    }
-  },
-  components: {
-    MyList,
-    MyListForm,
-  },
-  methods: {
-    getMovie: function (data) {
-      this.myMovies.push(data)
-    }
-  }
-}
-</script>
-
-<style>
-
-</style>
-```
-
-
-
-### 4. Random.vue
-
-```vue
-<template>
-  <div class="Random">
-    <h1>Random</h1>
-    <button @click="pickMovie">Pick</button>
-    <p>{{ randomList.title }}</p>
-    <p></p>
-  </div>
-</template>
-
-
-<script>
-import _ from 'lodash'
-
-const MOVIE_URL= 'https://gist.githubusercontent.com/eduChange-hphk/d9acb9fcfaa6ece53c9e8bcddd64131b/raw/9c8bc58a99e2ea77d42abd41376e5e1becabea69/movies.json'
-
-import axios from 'axios'
-
-export default {
-  name: 'Random',
-  data: function () {
-    return {
-      randomList: []
-    }
-  },
-  // methods: {
-  //   pickMovie: function () {
-  //     this.randomList = _.sample(this)
-  //   },
-  // },
-  methods: {
-    pickMovie: function () {
-    axios.get(MOVIE_URL)
-      .then (response => {
-        this.randomList = _.sample(response.data)
-    })
-  }
-  },
-  components: {
-    },
-}
-</script>
-```
-
-### 5. MovieCard.vue
-
-```vue
-<template>
-  <div>
-    <img :src="moviePoster" alt="">
-    <h2>{{ movieItem.title }}</h2>
-    <h2>{{ movieItem.overview }}</h2>
-
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'MovieCard',
-  props: {
-    movieItem: Object
-  },
-  computed: {
-    moviePoster: function () {
-      return `https://image.tmdb.org/t/p/w500/${ this.movieItem.poster_path }`
-    },
-  }
-}
-</script>
-
-<style>
-
-</style>
-```
-
-### 6. MyList.vue
-
-```vue
-<template>
-  <div>
-    <ul>
-      <li>{{ myMovie }}</li>
-    </ul>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'MyList',
-  props: {
-    myMovie : String,
-  }
-}
-</script>
-
-<style>
-
-</style>
-```
-
-### 7. MyListForm.vue
-
-```vue
-<template>
-  <div>
-    <p>MylistForm</p>
-    <input type="text" @keydown.enter="addMyList" v-model="inputMovie">
-    <button @click="addMyList">add</button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'MyListForm',
-  data: function () {
-    return {
-      inputMovie: ''
-    }
-  },
-  methods: {
-    addMyList : function () {
-      this.$emit('send-movie', this.inputMovie)
-      this.inputMovie = ''
-    }
-  }
-}
-</script>
-
-<style>
-
-</style>
-```
-
-
-
-## 소감 및 어려웠던 점
-
-Vue를 짧은 시간 동안 생각보다 많은 내용을 배우다 보니 프로젝트를 하기 전 머릿속에 잘 정리가 되어있지 않았던 것 같다. router를 사용하는법, props and emit 등 을 그래도 열심히 공부했었기 때문에 잘 활용할 수 있을 것이라고 생각했는데,  복합적으로 사용하여 페이지를 만드는 것은 생각보다 쉽지 않았다.
-
-특히 Home.vue에서 URL 정보를 받아 MovieCard.vue 에 넘겨주는 것이 가장 잘 해결되지 않아 많은 시간을 소비하였습니다.  Life Cycle에 대한 이해도가 부족했던 것 같습니다.
-
-이번 프로젝트를 진행하면서 전체적인 Vue의 흐름에 대해 이해할 수 있었습니다. 시간이 부족해 홈페이지를 꾸미는 작업은 못해서 아쉬움이 남습니다.
-
-
-
+- http://pjtyw.herokuapp.com/movies/
+
+#### 7. 느낀점
+
+- 장용원 
+  - 하나의 웹사이트를 구상하고 제작하는 모든 과정을 거치면서 Database와 Django의 흐름이 어떻게 되는지 더 깊게 생각할 수 있는 시간이었다.
+  - 일주일 간의 팀 프로젝트를 하면서 많은 시행착오 겪었고, 프로젝트를 어떻게 준비해야 할지, 비대면 상황에서 협업을 어떻게 효율적으로 할 수 있는지를 느꼈다.
+  - 웹사이트 사용자의 관점에서 생각하고 개발하는 법을 조금이나 배우게 된 것 같다.
+- 조영우 : 
